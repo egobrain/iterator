@@ -1,0 +1,14 @@
+%% -*- erlang -*-
+
+{application, iterator,
+ [
+  {description, "Erlang Iterator: a lazy sequences library"},
+  {vsn, git},
+  {registered, []},
+  {applications,
+   [
+    kernel,
+    stdlib
+   ]},
+  {env, []}
+ ]}.
