@@ -44,7 +44,7 @@ map(Fun, Zlist) ->
     fun() ->
         case Zlist() of
             [Data|Next] ->
-                [Fun(Data)|map(Fun, Next)];
+                [Fun(Data)] ++ map(Fun, Next);
             Done -> Done
         end
     end.
@@ -65,7 +65,7 @@ filter(Fun, Zlist) ->
              case Z() of
                  [Data|Next] ->
                      case Fun(Data) of
-                         true -> [Data|filter(Fun, Next)];
+                         true -> [Data] ++ filter(Fun, Next);
                          false -> Loop(Next)
                      end;
                  Done -> Done
@@ -80,7 +80,7 @@ filtermap(Fun, Zlist) ->
              case Z() of
                  [Data|Next] ->
                      case Fun(Data) of
-                         {true, Data2} -> [Data2|filtermap(Fun, Next)];
+                         {true, Data2} -> [Data2] ++ filtermap(Fun, Next);
                          false -> Loop(Next)
                      end;
                  Done -> Done
@@ -112,7 +112,7 @@ over(Fun, S, Zlist) ->
         case Zlist() of
             [Data|Next] ->
                 {Value, S2} = Fun(Data, S),
-                [Value|over(Fun, S2, Next)];
+                [Value] ++ over(Fun, S2, Next);
             Done -> Done
         end
     end.
@@ -124,7 +124,7 @@ dropwhen(Fun, Zlist) ->
             [Data|Next] ->
                 case Fun(Data) of
                     true -> [];
-                    false -> [Data|dropwhen(Fun, Next)]
+                    false -> [Data] ++ dropwhen(Fun, Next)
                 end;
             Done -> Done
         end
@@ -150,7 +150,7 @@ dropwhile(Fun, Zlist) ->
 append(Zlist1, Zlist2) ->
     fun() ->
         case Zlist1() of
-            [Data|Next] -> [Data|append(Next, Zlist2)];
+            [Data|Next] -> [Data] ++ append(Next, Zlist2);
             _Done -> Zlist2()
         end
     end.
@@ -170,7 +170,7 @@ ciclyc(Zlist) ->
 from_list(List) ->
     fun() ->
         case List of
-            [H|T] -> [H|from_list(T)];
+            [H|T] -> [H] ++ from_list(T);
             _ -> List
         end
     end.
@@ -182,7 +182,7 @@ to_list(Zlist) -> lists:reverse(fold(fun(H, T) -> [H|T] end, [], Zlist)).
 recurrent(Fun, S) ->
     fun() ->
         Next = Fun(S),
-        [Next|recurrent(Fun, Next)]
+        [Next] ++ recurrent(Fun, Next)
     end.
 
 -spec take(N :: pos_integer(), zlist(A)) -> {[A], zlist(A)}.
